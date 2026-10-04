@@ -27,7 +27,7 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: "0.147.5"   # 想升级就改这个版本号
+          hugo-version: "0.167.0"   # 想升级就改这个版本号
           extended: true
 
       - name: Setup Pages

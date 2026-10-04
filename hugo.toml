@@ -1,6 +1,6 @@
 # 站点主配置
-baseURL = "https://example.github.io/"   # 线上会被 Actions 自动覆盖，这里不影响部署
-languageCode = "zh-cn"
+baseURL = "https://caihy0924.github.io/"
+locale = "zh-CN"
 defaultContentLanguage = "zh-cn"
 title = "深海笔记"
 
