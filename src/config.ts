@@ -101,6 +101,9 @@ export const commentConfig = {
 	categoryId: "DIC_kwDOU7WI284DHE7P",
 	mapping: "pathname",
 	lang: "zh-CN",
+	// 评论框配色：跟着站点主题走（暗色用 transparent_dark，能融进卡片背景）
+	darkTheme: "transparent_dark",
+	lightTheme: "light",
 };
 
 // ───────── 友链 ─────────

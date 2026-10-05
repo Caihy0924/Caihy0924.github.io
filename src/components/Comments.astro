@@ -1,7 +1,17 @@
 ---
 import { commentConfig } from "../config";
 
-const { enable, repo, repoId, category, categoryId, mapping, lang } = commentConfig;
+const {
+    enable,
+    repo,
+    repoId,
+    category,
+    categoryId,
+    mapping,
+    lang,
+    darkTheme,
+    lightTheme,
+} = commentConfig;
 const ready = enable && repoId !== "" && categoryId !== "";
 ---
 
@@ -33,10 +43,40 @@ const ready = enable && repoId !== "" && categoryId !== "";
         data-reactions-enabled="1"
         data-emit-metadata="0"
         data-input-position="bottom"
-        data-theme="preferred_color_scheme"
+        data-theme={darkTheme}
         data-lang={lang}
         data-loading="lazy"
         crossorigin="anonymous"
         async>
+    </script>
+)}
+
+{ready && (
+    <script is:inline define:vars={{ darkTheme, lightTheme }}>
+        /* 让评论框的配色跟着站点主题走（默认是暗色，切到亮色时同步过去）。
+           giscus 自带的 preferred_color_scheme 跟的是操作系统偏好，
+           和站点自己的明暗开关是两回事，容易撞色。 */
+        (function () {
+            const host = document.querySelector(".giscus");
+            if (!host) return;
+
+            function applyTheme() {
+                const frame = host.querySelector("iframe.giscus-frame");
+                if (!frame || !frame.contentWindow) return;
+                const isDark = document.documentElement.classList.contains("dark");
+                frame.contentWindow.postMessage(
+                    { giscus: { setConfig: { theme: isDark ? darkTheme : lightTheme } } },
+                    "https://giscus.app"
+                );
+            }
+
+            // 评论框是懒加载的，等它插进 DOM 再同步
+            new MutationObserver(applyTheme).observe(host, { childList: true, subtree: true });
+            // 用户切换明暗主题时同步
+            new MutationObserver(applyTheme).observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ["class"],
+            });
+        })();
     </script>
 )}
