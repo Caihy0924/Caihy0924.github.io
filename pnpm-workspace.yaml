@@ -1,0 +1,16 @@
+# pnpm 11 默认会拒绝「发布不到 24 小时」的依赖（防供应链投毒）。
+# 这个 lockfile 里有个传递依赖是当天刚发布的，会被拦下来导致 CI 装不上依赖。
+# 设成 0 表示不限制发布时间。
+minimumReleaseAge: 0
+
+# pnpm 11 默认不让依赖执行安装脚本，CI 里会直接报错退出。
+# 这几个必须放行：sharp 要装原生图像库、esbuild 要放二进制、
+# @parcel/watcher 要给文件监听装原生模块、swup 有自己的安装步骤。
+allowBuilds:
+  "@parcel/watcher": true
+  esbuild: true
+  sharp: true
+  swup: true
+
+# 以后万一有新依赖带安装脚本，降级成警告而不是直接让构建失败
+strictDepBuilds: false
