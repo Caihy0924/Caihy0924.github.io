@@ -1,0 +1,90 @@
+---
+import { Icon } from "astro-icon/components";
+import WidgetLayout from "./WidgetLayout.astro";
+
+interface Props {
+	class?: string;
+	style?: string;
+}
+const className = Astro.props.class;
+const style = Astro.props.style;
+---
+
+<WidgetLayout name="一言" id="hitokoto" class={className} style={style}>
+    <div class="pb-4">
+        <hitokoto-widget class="block">
+            <div data-role="text" class="text-sm leading-relaxed min-h-[3.5rem] transition">正在取一句话…</div>
+            <div class="mt-2 flex items-center justify-between gap-2">
+                <span data-role="from" class="text-xs text-black/40 dark:text-white/40 truncate"></span>
+                <button type="button" data-role="refresh" aria-label="换一句"
+                        class="btn-plain scale-animation rounded-md h-7 w-7 shrink-0 text-[var(--primary)]">
+                    <Icon name="material-symbols:refresh-rounded" class="text-[1.1rem]"></Icon>
+                </button>
+            </div>
+        </hitokoto-widget>
+    </div>
+</WidgetLayout>
+
+<script>
+	type Quote = {
+		text: string;
+		from: string;
+	};
+
+	class HitokotoWidget extends HTMLElement {
+		private textEl: HTMLElement | null = null;
+		private fromEl: HTMLElement | null = null;
+		private btnEl: HTMLElement | null = null;
+		private readonly cacheKey = "hitokoto-cache-v1";
+
+		connectedCallback() {
+			this.textEl = this.querySelector('[data-role="text"]');
+			this.fromEl = this.querySelector('[data-role="from"]');
+			this.btnEl = this.querySelector('[data-role="refresh"]');
+			if (!this.textEl) return;
+
+			// 同一个会话里复用上一条，免得每次翻页都请求一次
+			const cached = sessionStorage.getItem(this.cacheKey);
+			if (cached) {
+				try {
+					this.render(JSON.parse(cached) as Quote);
+				} catch (e) {
+					this.load();
+				}
+			} else {
+				this.load();
+			}
+
+			this.btnEl?.addEventListener("click", () => this.load());
+		}
+
+		private async load() {
+			this.btnEl?.setAttribute("disabled", "true");
+			try {
+				const res = await fetch("https://v1.hitokoto.cn/?encode=json&max_length=28");
+				if (!res.ok) throw new Error(String(res.status));
+				const data = await res.json();
+				const quote: Quote = {
+					text: String(data.hitokoto ?? ""),
+					from: String(data.from ?? ""),
+				};
+				sessionStorage.setItem(this.cacheKey, JSON.stringify(quote));
+				this.render(quote);
+			} catch (e) {
+				if (this.textEl) this.textEl.textContent = "这次没取到，点右上角再试一次。";
+				if (this.fromEl) this.fromEl.textContent = "";
+			} finally {
+				this.btnEl?.removeAttribute("disabled");
+			}
+		}
+
+		private render(quote: Quote) {
+			if (this.textEl) this.textEl.textContent = quote.text;
+			if (this.fromEl) this.fromEl.textContent = quote.from ? `—— ${quote.from}` : "";
+		}
+	}
+
+	if (!customElements.get("hitokoto-widget")) {
+		customElements.define("hitokoto-widget", HitokotoWidget);
+	}
+</script>

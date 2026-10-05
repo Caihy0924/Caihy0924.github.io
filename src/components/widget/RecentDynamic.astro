@@ -1,0 +1,48 @@
+---
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import { url } from "../../utils/url-utils";
+import WidgetLayout from "./WidgetLayout.astro";
+
+interface Props {
+	class?: string;
+	style?: string;
+}
+const className = Astro.props.class;
+const style = Astro.props.style;
+
+const entries = (await getCollection("dynamic"))
+	.sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
+	.slice(0, 3);
+
+// 统一按 UTC 输出，和站点其它地方一致
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+
+const preview = (body: string) =>
+	body
+		.replace(/^---[\s\S]*?---/, "")
+		.replace(/[#>*`[\]()!-]/g, "")
+		.replace(/\s+/g, " ")
+		.trim()
+		.slice(0, 46);
+---
+
+<WidgetLayout name="最新动态" id="recent-dynamic" class={className} style={style}>
+    <div class="pb-4 flex flex-col gap-3">
+        {entries.length === 0 && (
+            <div class="text-sm text-black/40 dark:text-white/40">还没有动态。</div>
+        )}
+        {entries.map((e) => (
+            <a href={url("/dynamic/")} class="group flex flex-col gap-1">
+                <div class="text-xs text-black/40 dark:text-white/40 tabular-nums">{fmt(e.data.published)}</div>
+                <div class="text-sm leading-snug line-clamp-2 transition group-hover:text-[var(--primary)]">
+                    {preview(e.body ?? "")}
+                </div>
+            </a>
+        ))}
+        <a href={url("/dynamic/")} class="text-sm text-[var(--primary)] flex items-center gap-1 w-fit">
+            更多动态
+            <Icon name="material-symbols:chevron-right-rounded" />
+        </a>
+    </div>
+</WidgetLayout>

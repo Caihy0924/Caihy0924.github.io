@@ -1,0 +1,117 @@
+---
+import { getCollection } from "astro:content";
+import WidgetLayout from "./WidgetLayout.astro";
+
+interface Props {
+	class?: string;
+	style?: string;
+}
+const className = Astro.props.class;
+const style = Astro.props.style;
+
+const entries = await getCollection("posts", ({ data }) =>
+	import.meta.env.PROD ? data.draft !== true : true,
+);
+
+const byDay: Record<string, { title: string; url: string }> = {};
+for (const e of entries) {
+	const d = new Date(e.data.published);
+	if (Number.isNaN(d.getTime())) continue;
+	const key = d.toISOString().slice(0, 10);
+	if (!byDay[key]) byDay[key] = { title: e.data.title, url: `/posts/${e.slug}/` };
+}
+---
+
+<WidgetLayout name="日历" id="calendar" class={className} style={style}>
+    <post-calendar class="block pb-4" data-posts={JSON.stringify(byDay)}></post-calendar>
+</WidgetLayout>
+
+<style is:global>
+    post-calendar { display: block; }
+    post-calendar .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+    post-calendar .cal-title { font-size: 0.875rem; font-weight: 600; }
+    post-calendar .cal-nav { width: 1.75rem; height: 1.75rem; border-radius: 0.5rem; color: var(--primary); font-size: 1.1rem; line-height: 1; }
+    post-calendar .cal-nav:hover { background: var(--btn-regular-bg, rgba(128, 128, 128, 0.12)); }
+    post-calendar .cal-week,
+    post-calendar .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+    post-calendar .cal-week span { text-align: center; font-size: 0.7rem; opacity: 0.45; padding-bottom: 2px; }
+    post-calendar .cal-cell { position: relative; display: flex; align-items: center; justify-content: center; aspect-ratio: 1 / 1; font-size: 0.75rem; border-radius: 0.5rem; }
+    post-calendar .cal-cell:hover { background: var(--btn-regular-bg, rgba(128, 128, 128, 0.12)); }
+    post-calendar .cal-cell.is-empty { pointer-events: none; }
+    post-calendar .cal-cell.has-post { color: var(--primary); font-weight: 700; }
+    post-calendar .cal-cell.has-post::after { content: ""; position: absolute; bottom: 3px; width: 4px; height: 4px; border-radius: 50%; background: var(--primary); }
+    post-calendar .cal-cell.is-today { outline: 1px solid var(--primary); outline-offset: -1px; }
+</style>
+
+<script>
+	class PostCalendar extends HTMLElement {
+		private posts: Record<string, { title: string; url: string }> = {};
+		private cursor: Date = new Date();
+
+		connectedCallback() {
+			try {
+				this.posts = JSON.parse(this.getAttribute("data-posts") || "{}");
+			} catch (e) {
+				this.posts = {};
+			}
+			this.cursor = new Date();
+			this.cursor.setDate(1);
+			this.renderGrid();
+		}
+
+		private dayKey(y: number, m: number, d: number) {
+			return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+		}
+
+		private escapeHtml(s: string) {
+			return s.replace(/[&<>"]/g, (c) =>
+				({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] as string,
+			);
+		}
+
+		private renderGrid() {
+			const y = this.cursor.getUTCFullYear();
+			const m = this.cursor.getUTCMonth();
+			const pad = new Date(Date.UTC(y, m, 1)).getUTCDay();
+			const total = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+
+			// 文章日期是按 UTC 存/算的，这里也统一用 UTC，免得跨时区差一天
+			const todayKey = new Date().toISOString().slice(0, 10);
+
+			let cells = "";
+			for (let i = 0; i < pad; i++) {
+				cells += '<span class="cal-cell is-empty"></span>';
+			}
+			for (let d = 1; d <= total; d++) {
+				const key = this.dayKey(y, m, d);
+				const hit = this.posts[key];
+				const cls = ["cal-cell"];
+				if (hit) cls.push("has-post");
+				if (key === todayKey) cls.push("is-today");
+				cells += `<span class="${cls.join(" ")}"${hit ? ` title="${this.escapeHtml(hit.title)}"` : ""}>${d}</span>`;
+			}
+
+			this.innerHTML = `
+				<div class="cal-head">
+					<button type="button" class="cal-nav" data-step="-1" aria-label="上个月">‹</button>
+					<span class="cal-title">${y} 年 ${m + 1} 月</span>
+					<button type="button" class="cal-nav" data-step="1" aria-label="下个月">›</button>
+				</div>
+				<div class="cal-week">${["日", "一", "二", "三", "四", "五", "六"].map((w) => `<span>${w}</span>`).join("")}</div>
+				<div class="cal-grid">${cells}</div>
+			`;
+
+			this.querySelectorAll(".cal-nav").forEach((btn) => {
+				btn.addEventListener("click", () => {
+					const step = Number((btn as HTMLElement).getAttribute("data-step") ?? "0");
+					this.cursor.setUTCMonth(this.cursor.getUTCMonth() + step);
+					this.renderGrid();
+				});
+			});
+		}
+	}
+
+	if (!customElements.get("post-calendar")) {
+		customElements.define("post-calendar", PostCalendar);
+	}
+</script>

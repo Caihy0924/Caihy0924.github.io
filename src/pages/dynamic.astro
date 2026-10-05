@@ -1,0 +1,48 @@
+---
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+
+const entries = (await getCollection("dynamic")).sort(
+	(a, b) => b.data.published.valueOf() - a.data.published.valueOf(),
+);
+
+const items = await Promise.all(
+	entries.map(async (entry) => ({
+		entry,
+		Content: (await entry.render()).Content,
+	})),
+);
+---
+
+<MainGridLayout title="动态">
+    <div class="card-base px-6 md:px-9 py-6 mb-4 onload-animation">
+        <div class="flex items-center gap-3 mb-6">
+            <Icon name="material-symbols:bolt-rounded" class="text-[var(--primary)] text-[1.75rem]" />
+            <h1 class="text-2xl font-bold">动态</h1>
+        </div>
+
+        {items.length === 0 && (
+            <p class="text-sm text-black/40 dark:text-white/40">
+                还没有动态。在 src/content/dynamic/ 里丢一个 md 文件进去就行。
+            </p>
+        )}
+
+        <div class="flex flex-col">
+            {items.map(({ entry, Content }, index) => (
+                <article class="flex gap-4 pb-5 mb-5 border-b border-dashed border-[var(--line-divider)] last:border-b-0 last:pb-0 last:mb-0">
+                    <div class="flex flex-col items-center pt-1.5 shrink-0">
+                        <span class="w-2.5 h-2.5 rounded-full bg-[var(--primary)]"></span>
+                        {index !== items.length - 1 && <span class="w-px flex-1 bg-[var(--line-divider)] mt-1"></span>}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="text-sm text-black/30 dark:text-white/30 mb-2">
+                            {entry.data.published.toISOString().slice(0, 10)}
+                        </div>
+                        <div class="markdown-content"><Content /></div>
+                    </div>
+                </article>
+            ))}
+        </div>
+    </div>
+</MainGridLayout>

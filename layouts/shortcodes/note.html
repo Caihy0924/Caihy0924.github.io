@@ -1,4 +1,0 @@
-{{- $type := .Get "type" | default "tip" -}}
-<div class="note note-{{ $type }}">
-  <div class="note-body">{{ .Inner | markdownify }}</div>
-</div>

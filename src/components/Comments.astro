@@ -1,0 +1,42 @@
+---
+import { commentConfig } from "../config";
+
+const { enable, repo, repoId, category, categoryId, mapping, lang } = commentConfig;
+const ready = enable && repoId !== "" && categoryId !== "";
+---
+
+{enable && (
+    <div class="card-base px-6 md:px-9 py-6 mb-4 onload-animation">
+        <div class="text-xl font-bold mb-4">评论</div>
+
+        {ready && <div class="giscus"></div>}
+
+        {!ready && (
+            <div class="text-sm text-black/40 dark:text-white/40 leading-relaxed">
+                评论还没接通。需要在 GitHub 仓库设置里打开 Discussions，
+                再去 <a class="text-[var(--primary)]" href="https://giscus.app/zh-CN" target="_blank" rel="noopener">giscus.app</a>
+                生成 repoId 和 categoryId，填到 <code>src/config.ts</code> 的 commentConfig 里。
+            </div>
+        )}
+    </div>
+)}
+
+{ready && (
+    <script is:inline
+        src="https://giscus.app/client.js"
+        data-repo={repo}
+        data-repo-id={repoId}
+        data-category={category}
+        data-category-id={categoryId}
+        data-mapping={mapping}
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang={lang}
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+    </script>
+)}

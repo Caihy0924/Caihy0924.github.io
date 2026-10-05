@@ -1,0 +1,34 @@
+---
+import { Icon } from "astro-icon/components";
+import I18nKey from "../i18n/i18nKey";
+import { i18n } from "../i18n/translation";
+import { getCategoryList, getSortedPostsList } from "../utils/content-utils";
+import { url } from "../utils/url-utils";
+
+// 「未分类」不进快捷条，那一栏没意义
+const uncategorized = i18n(I18nKey.uncategorized);
+const categories = (await getCategoryList())
+    .filter((c) => c.name.trim() !== uncategorized)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 4);
+const total = (await getSortedPostsList()).length;
+---
+
+<div id="category-bar" class="card-base px-3 py-2 mb-4 flex items-center gap-2 overflow-x-auto onload-animation">
+    <a href={url("/")}
+       class="btn-regular rounded-full h-8 px-3 flex items-center gap-1 text-sm shrink-0 text-[var(--primary)]">
+        <Icon name="material-symbols:home-outline-rounded" />主页
+    </a>
+    <a href={url("/archive/")} class="btn-regular rounded-full h-8 px-3 flex items-center gap-1.5 text-sm shrink-0">
+        全部<span class="text-xs opacity-50 tabular-nums">{total}</span>
+    </a>
+    {categories.map((c) => (
+        <a href={c.url} class="btn-regular rounded-full h-8 px-3 flex items-center gap-1.5 text-sm shrink-0">
+            {c.name.trim()}<span class="text-xs opacity-50 tabular-nums">{c.count}</span>
+        </a>
+    ))}
+    <a href={url("/archive/")}
+       class="btn-regular rounded-full h-8 px-3 flex items-center gap-1 text-sm shrink-0 ml-auto">
+        更多<Icon name="material-symbols:chevron-right-rounded" />
+    </a>
+</div>

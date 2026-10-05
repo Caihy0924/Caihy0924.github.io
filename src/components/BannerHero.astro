@@ -1,0 +1,190 @@
+---
+// 横幅上的文字层：大标题 + 打字机副标题 + 社交图标
+// 只在首页显示（靠 body 上的 lg:is-home 类判断，Swup 切换页面时会自动跟着变）
+import { Icon } from "astro-icon/components";
+import { bannerTextConfig, profileConfig } from "../config";
+import { url } from "../utils/url-utils";
+
+const { enable, title, subtitles, typewriter, showSocial } = bannerTextConfig;
+const lines = (subtitles ?? []).filter((s) => s && s.trim() !== "");
+const socials = showSocial ? profileConfig.links : [];
+---
+
+{enable && (
+    <div id="banner-hero">
+        <div class="banner-hero-shade"></div>
+        <div class="banner-hero-inner">
+            {title && <h1 class="banner-hero-title">{title}</h1>}
+            {lines.length > 0 && (
+                <p class="banner-hero-sub">
+                    <span id="banner-hero-typed">{typewriter ? "" : lines[0]}</span><span class="banner-hero-cursor">|</span>
+                </p>
+            )}
+            {(socials.length > 0 || showSocial) && (
+                <div class="banner-hero-social">
+                    {socials.map((item) => (
+                        <a href={item.url} target="_blank" rel="me" aria-label={item.name} class="banner-hero-btn">
+                            <Icon name={item.icon} />
+                        </a>
+                    ))}
+                    <a href={url("/rss.xml")} aria-label="RSS" class="banner-hero-btn">
+                        <Icon name="material-symbols:rss-feed-rounded" />
+                    </a>
+                </div>
+            )}
+        </div>
+    </div>
+)}
+
+<script define:vars={{ lines, typewriter }}>
+	(function () {
+		const typedEl = document.getElementById("banner-hero-typed");
+		if (!typedEl || !lines || lines.length === 0) return;
+
+		const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		if (!typewriter || reduceMotion) {
+			typedEl.textContent = lines[0];
+			return;
+		}
+
+		let lineIndex = 0;
+		let charIndex = 0;
+		let deleting = false;
+
+		const TYPE_SPEED = 95;
+		const DELETE_SPEED = 38;
+
+		function tick() {
+			const full = lines[lineIndex] || "";
+
+			if (!deleting) {
+				charIndex++;
+				typedEl.textContent = full.slice(0, charIndex);
+				if (charIndex >= full.length) {
+					// 只有一句就停在这，多句才继续轮播
+					if (lines.length === 1) return;
+					deleting = true;
+					window.setTimeout(tick, 2400);
+					return;
+				}
+				window.setTimeout(tick, TYPE_SPEED);
+				return;
+			}
+
+			charIndex--;
+			typedEl.textContent = full.slice(0, charIndex);
+			if (charIndex <= 0) {
+				deleting = false;
+				lineIndex = (lineIndex + 1) % lines.length;
+				window.setTimeout(tick, 420);
+				return;
+			}
+			window.setTimeout(tick, DELETE_SPEED);
+		}
+
+		window.setTimeout(tick, 600);
+	})();
+</script>
+
+<style>
+    #banner-hero {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0 1.5rem;
+        pointer-events: none;
+    }
+
+    /* 不在首页就整个藏起来（body 上的 lg:is-home 由 Layout 的 Swup 钩子维护） */
+    :global(body:not(.lg:is-home)) #banner-hero {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease;
+    }
+
+    .banner-hero-shade {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.1) 0%,
+            rgba(0, 0, 0, 0.28) 45%,
+            rgba(0, 0, 0, 0.55) 100%
+        );
+    }
+
+    .banner-hero-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.7rem;
+        max-width: 48rem;
+    }
+
+    .banner-hero-title {
+        margin: 0;
+        font-size: clamp(1.9rem, 4.6vw, 3.75rem);
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: 0.02em;
+        color: #fff;
+        text-shadow: 0 2px 24px rgba(0, 0, 0, 0.75), 0 1px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    .banner-hero-sub {
+        margin: 0;
+        min-height: 1.6em;
+        font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+        color: rgba(255, 255, 255, 0.86);
+        text-shadow: 0 1px 12px rgba(0, 0, 0, 0.85);
+    }
+
+    .banner-hero-cursor {
+        margin-left: 2px;
+        animation: bannerHeroBlink 1.1s steps(2, start) infinite;
+    }
+
+    @keyframes bannerHeroBlink {
+        to {
+            opacity: 0;
+        }
+    }
+
+    .banner-hero-social {
+        display: flex;
+        gap: 0.6rem;
+        margin-top: 0.4rem;
+        pointer-events: auto;
+    }
+
+    .banner-hero-btn {
+        width: 2.6rem;
+        height: 2.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        font-size: 1.35rem;
+        color: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(6px);
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .banner-hero-btn:hover {
+        background: rgba(255, 255, 255, 0.22);
+        transform: translateY(-1px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .banner-hero-cursor {
+            animation: none;
+        }
+    }
+</style>

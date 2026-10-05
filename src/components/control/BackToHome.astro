@@ -1,0 +1,37 @@
+---
+import { Icon } from "astro-icon/components";
+import { url } from "../../utils/url-utils";
+---
+
+<!-- 和 BackToTop 一样的定位思路，只是常驻显示，点了回首页 -->
+<div class="back-to-home-wrapper hidden lg:block">
+    <a id="back-to-home-btn" href={url("/")} aria-label="回到主页"
+       class="btn-card flex items-center justify-center">
+        <Icon name="material-symbols:home-outline-rounded" class="mx-auto"></Icon>
+    </a>
+</div>
+
+<style lang="stylus">
+.back-to-home-wrapper
+    width: 3.75rem
+    height: 3.75rem
+    position: absolute
+    right: 0
+    top: 0
+    pointer-events: none
+
+#back-to-home-btn
+    color: var(--primary)
+    font-size: 2.25rem
+    border: none
+    position: fixed
+    bottom: 15rem
+    width: 3.75rem
+    height: 3.75rem
+    transform: translateX(5rem)
+    pointer-events: auto
+    i
+        font-size: 1.75rem
+    &:active
+        transform: translateX(5rem) scale(0.9)
+</style>

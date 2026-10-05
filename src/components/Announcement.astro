@@ -1,0 +1,53 @@
+---
+import { Icon } from "astro-icon/components";
+import { announcementConfig } from "../config";
+
+const { enable, content, closable } = announcementConfig;
+---
+
+{enable && content && (
+    <div id="announcement-bar" class="card-base px-5 py-3 mb-4 flex items-start gap-3 onload-animation">
+        <Icon name="material-symbols:campaign-rounded" class="text-[var(--primary)] text-[1.25rem] shrink-0 mt-0.5" />
+        <div class="flex-1 text-sm text-75 leading-relaxed">{content}</div>
+        {closable && (
+            <button id="announcement-close" aria-label="关闭公告"
+                    class="btn-plain scale-animation rounded-md w-7 h-7 shrink-0 text-black/40 dark:text-white/40">
+                <Icon name="material-symbols:close-rounded" class="text-[1.1rem]" />
+            </button>
+        )}
+    </div>
+)}
+
+<script>
+    const ANNOUNCEMENT_KEY = "announcement-dismissed";
+
+    function initAnnouncement() {
+        const bar = document.getElementById("announcement-bar");
+        if (!bar) return;
+
+        if (localStorage.getItem(ANNOUNCEMENT_KEY) === "1") {
+            bar.classList.add("hidden");
+            return;
+        }
+
+        const btn = document.getElementById("announcement-close");
+        if (btn && btn.dataset.bound !== "1") {
+            btn.dataset.bound = "1";
+            btn.addEventListener("click", () => {
+                bar.classList.add("hidden");
+                localStorage.setItem(ANNOUNCEMENT_KEY, "1");
+            });
+        }
+    }
+
+    function setupAnnouncement() {
+        initAnnouncement();
+        window.swup.hooks.on("page:view", initAnnouncement);
+    }
+
+    if (window.swup) {
+        setupAnnouncement();
+    } else {
+        document.addEventListener("swup:enable", setupAnnouncement);
+    }
+</script>
