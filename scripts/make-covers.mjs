@@ -1,8 +1,9 @@
 /**
  * 给每篇文章生成封面图。
  *
- * 素材放在项目外面的 ../cover-sources/ 里（night.jpg / minimal.jpg / crystal.png），
- * 按顺序轮换，底部压暗 + 分类色轻叠，输出 640x400 的 JPEG 到 public/covers/，
+ * 素材放在项目外面的 ../cover-sources/ 里（空洞骑士那几张），
+ * 按首页顺序轮换 + 每次换裁切位置，底部压暗 + 分类色轻叠，
+ * 输出 640x400 的 JPEG 到 public/covers/，
  * 并把路径写回每篇文章的 front matter。
  *
  * 用法：node scripts/make-covers.mjs
@@ -16,10 +17,22 @@ const postsDir = path.join(root, "src/content/posts");
 const outDir = path.join(root, "public/covers");
 const srcDir = path.resolve(root, "..", "cover-sources");
 
-const SOURCES = ["night.jpg", "minimal.jpg", "crystal.png"];
+const SOURCES = [
+	"crystal.png",
+	"knight-dark.png",
+	"knight-4k.jpg",
+	"minimal.jpg",
+	"night.jpg",
+];
 
 // 同一张素材会被十几篇文章用到，换个裁切位置，重复感会淡很多
 const POSITIONS = ["attention", "center", "left", "right", "top", "bottom"];
+
+// 有些素材里的人物太靠中间、整体偏空，先放大一圈再裁，卡片上才看得清
+const ZOOMS = {
+	"knight-dark.png": 2,
+	"minimal.jpg": 1.5,
+};
 
 // 分类 → 叠色：保持暗调，只做轻微区分
 const TINTS = {
@@ -103,10 +116,25 @@ for (const file of files) {
 	const outName = `${safeName(file.replace(/\.md$/, ""))}.jpg`;
 	const outPath = path.join(outDir, outName);
 	const i = seedIndex.get(file) ?? index;
-	const source = path.join(srcDir, SOURCES[i % SOURCES.length]);
+	const sourceName = SOURCES[i % SOURCES.length];
+	const source = path.join(srcDir, sourceName);
 	const position =
 		POSITIONS[Math.floor(i / SOURCES.length) % POSITIONS.length];
 	const tint = TINTS[category] ?? TINTS.随笔;
+
+	const zoom = ZOOMS[sourceName] ?? 1;
+	let pipeline = sharp(source);
+	if (zoom > 1) {
+		const meta = await pipeline.metadata();
+		const cw = Math.round(meta.width / zoom);
+		const ch = Math.round(meta.height / zoom);
+		pipeline = sharp(source).extract({
+			left: Math.round((meta.width - cw) / 2),
+			top: Math.round((meta.height - ch) / 2),
+			width: cw,
+			height: ch,
+		});
+	}
 
 	const overlay = Buffer.from(
 		`<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
@@ -121,7 +149,7 @@ for (const file of files) {
 		</svg>`,
 	);
 
-	await sharp(source)
+	await pipeline
 		.resize(W, H, { fit: "cover", position })
 		.composite([{ input: overlay }])
 		.jpeg({ quality: 80, mozjpeg: true })
@@ -135,7 +163,7 @@ for (const file of files) {
 		kb: Math.round(fs.statSync(outPath).size / 1024),
 		category,
 		title,
-		素材: SOURCES[i % SOURCES.length],
+		素材: sourceName,
 		裁切: position,
 	});
 	index++;
