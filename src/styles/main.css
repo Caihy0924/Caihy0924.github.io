@@ -1,5 +1,12 @@
 @tailwind components;
 
+/* widget-layout / table-of-contents 都是自定义元素，默认 display:inline。
+   放在普通 div 里（比如 swup 容器 #toc）时，inline 盒子的背景只会沿着行盒画，
+   卡片底色会整块消失——之前目录看着"透明"就是这个原因。 */
+widget-layout {
+    display: block;
+}
+
 @layer components {
     .card-base {
         /* 卡片：实底 + 一圈极淡描边。壁纸只在卡片之间的缝里透出来，
