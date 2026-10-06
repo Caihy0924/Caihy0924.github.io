@@ -3,6 +3,7 @@ import path from "node:path";
 import Comments from "@components/Comments.astro";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
+import OjLinkCard from "@components/OjLinkCard.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
@@ -27,6 +28,27 @@ const { entry } = Astro.props;
 const { Content, headings } = await entry.render();
 
 const { remarkPluginFrontmatter } = await entry.render();
+
+// 相关文章：先看共同标签，再看是不是同一个分类，最后按时间排
+const myTags = entry.data.tags ?? [];
+const relatedPosts = (await getSortedPosts())
+	.filter((post) => post.slug !== entry.slug)
+	.map((post) => {
+		const sharedTags = (post.data.tags ?? []).filter((tag) =>
+			myTags.includes(tag),
+		).length;
+		const sameCategory =
+			post.data.category && post.data.category === entry.data.category ? 1 : 0;
+		return { post, score: sharedTags * 2 + sameCategory };
+	})
+	.filter((item) => item.score > 0)
+	.sort(
+		(a, b) =>
+			b.score - a.score ||
+			new Date(b.post.data.published).getTime() -
+				new Date(a.post.data.published).getTime(),
+	)
+	.slice(0, 3);
 
 const jsonLd = {
 	"@context": "https://schema.org",
@@ -135,5 +157,36 @@ const jsonLd = {
             </div>}
         </a>
     </div>
+
+    {relatedPosts.length > 0 && (
+        <div class="card-base px-6 py-5 mb-4 onload-animation">
+            <div class="flex items-center gap-2 font-bold text-lg text-90 mb-3">
+                <Icon name="material-symbols:auto-awesome-outline-rounded" class="text-[var(--primary)] text-xl"></Icon>
+                相关文章
+            </div>
+            <div class="flex flex-col">
+                {relatedPosts.map(({ post }) => (
+                    <a href={getPostUrlBySlug(post.slug)} aria-label={post.data.title}
+                       class="group flex items-start gap-3 rounded-xl px-3 py-2.5 transition hover:bg-[var(--btn-plain-bg-hover)]">
+                        <Icon name="material-symbols:article-outline-rounded"
+                              class="text-[var(--primary)] text-xl shrink-0 mt-0.5"></Icon>
+                        <div class="min-w-0 flex-1">
+                            <div class="font-medium text-90 truncate transition group-hover:text-[var(--primary)]">
+                                {post.data.title}
+                            </div>
+                            <div class="text-xs text-50 mt-0.5 truncate">
+                                {post.data.category ? `${post.data.category} · ` : ""}{formatDateToYYYYMMDD(post.data.published)}
+                                {post.data.tags?.length ? ` · ${post.data.tags.slice(0, 3).map((t: string) => `#${t}`).join(" ")}` : ""}
+                            </div>
+                        </div>
+                        <Icon name="material-symbols:chevron-right-rounded"
+                              class="text-black/20 dark:text-white/20 text-xl shrink-0 transition group-hover:translate-x-0.5 group-hover:text-[var(--primary)]"></Icon>
+                    </a>
+                ))}
+            </div>
+        </div>
+    )}
+
+    <OjLinkCard />
 
 </MainGridLayout>

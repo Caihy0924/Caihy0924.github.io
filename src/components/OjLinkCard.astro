@@ -1,0 +1,158 @@
+---
+// 题目链接卡片：正文里单独占一段（或标题）的洛谷 / CF / AtCoder 链接，自动加个来源徽章和题号
+---
+
+<style is:global>
+    .oj-card {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.65rem 0.9rem;
+        margin: 0.5rem 0;
+        border: 1px solid var(--card-border);
+        border-radius: 0.9rem;
+        background: var(--card-bg);
+        transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .oj-card:hover {
+        border-color: var(--primary);
+        transform: translateY(-1px);
+    }
+    .oj-card > p,
+    .oj-card > h1,
+    .oj-card > h2,
+    .oj-card > h3,
+    .oj-card > h4 {
+        margin: 0;
+        flex: 1;
+        min-width: 0;
+    }
+    .oj-badge {
+        flex-shrink: 0;
+        font-size: 0.72rem;
+        font-weight: 700;
+        line-height: 1;
+        padding: 0.3rem 0.5rem;
+        border-radius: 0.5rem;
+        letter-spacing: 0.02em;
+    }
+    .oj-id {
+        flex-shrink: 0;
+        font-family: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
+        font-size: 0.78rem;
+        color: var(--toc-label-secondary);
+        letter-spacing: 0.02em;
+    }
+    /* 标题里的题目链接只加徽章，不套卡片，保留标题的样子 */
+    h1 > .oj-badge,
+    h2 > .oj-badge,
+    h3 > .oj-badge,
+    h4 > .oj-badge {
+        margin-right: 0.5rem;
+        vertical-align: middle;
+    }
+</style>
+
+<script>
+    type OjRule = { name: string; color: string; host: RegExp; id?: RegExp };
+
+    const OJ_RULES: OjRule[] = [
+        {
+            name: "洛谷",
+            color: "#3f8fc7",
+            host: /(^|\.)luogu\.com\.cn$/,
+            id: /\/problem\/([A-Za-z]+\d+)/,
+        },
+        {
+            name: "Codeforces",
+            color: "#1f8acb",
+            host: /(^|\.)codeforces\.com$/,
+            id: /\/problem(?:set\/problem)?\/(\d+)\/([A-Z]\d?)/,
+        },
+        {
+            name: "AtCoder",
+            color: "#8a8f98",
+            host: /(^|\.)atcoder\.jp$/,
+            id: /\/tasks\/([A-Za-z0-9_-]+)/,
+        },
+        {
+            name: "OI Wiki",
+            color: "#4ecdc4",
+            host: /(^|\.)oi-wiki\.org$/,
+        },
+    ];
+
+    function decorateOjLinks() {
+        const scope = document.querySelector(".markdown-content");
+        if (!scope) return;
+
+        const links = Array.from(scope.querySelectorAll("a[href]")) as HTMLAnchorElement[];
+        for (const link of links) {
+            let url: URL;
+            try {
+                url = new URL(link.href, location.href);
+            } catch {
+                continue;
+            }
+            const rule = OJ_RULES.find((r) => r.host.test(url.hostname));
+            if (!rule) continue;
+
+            const parent = link.parentElement;
+            if (!parent) continue;
+            const isBlockish = /^(P|H[1-6])$/.test(parent.tagName);
+            if (!isBlockish) continue;
+
+            // 这一块里除了这个链接（以及标题自带的 # 锚点）没有别的链接
+            const siblings = Array.from(parent.querySelectorAll("a[href]")).filter(
+                (a) => !a.classList.contains("anchor"),
+            );
+            if (siblings.length !== 1 || siblings[0] !== link) continue;
+            // 段落里除了链接还有别的文字就不动它
+            if (
+                parent.tagName === "P" &&
+                (parent.textContent ?? "").trim() !== (link.textContent ?? "").trim()
+            ) {
+                continue;
+            }
+
+            if (parent.querySelector(".oj-badge")) continue;
+
+            const badge = document.createElement("span");
+            badge.className = "oj-badge";
+            badge.textContent = rule.name;
+            badge.style.color = rule.color;
+            badge.style.background = `${rule.color}24`;
+
+            const match = rule.id ? url.href.match(rule.id) : null;
+            const idText = match ? (match[2] ? `${match[1]}${match[2]}` : match[1]) : "";
+
+            if (parent.tagName === "P") {
+                parent.classList.add("oj-card");
+                parent.insertBefore(badge, parent.firstChild);
+                if (idText) {
+                    const idEl = document.createElement("span");
+                    idEl.className = "oj-id";
+                    idEl.textContent = idText;
+                    parent.appendChild(idEl);
+                }
+            } else {
+                parent.insertBefore(badge, parent.firstChild);
+            }
+        }
+    }
+
+    document.addEventListener("astro:page-load", decorateOjLinks);
+    const swupHooks = (
+        window as unknown as { swup?: { hooks?: { on: (n: string, f: () => void) => void } } }
+    ).swup;
+    if (swupHooks?.hooks) {
+        swupHooks.hooks.on("content:replace", () => setTimeout(decorateOjLinks, 60));
+        swupHooks.hooks.on("page:view", () => setTimeout(decorateOjLinks, 200));
+    }
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", decorateOjLinks);
+    } else {
+        decorateOjLinks();
+    }
+    setTimeout(decorateOjLinks, 400);
+</script>

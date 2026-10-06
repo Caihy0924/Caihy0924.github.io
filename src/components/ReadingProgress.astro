@@ -1,0 +1,72 @@
+---
+// 顶部阅读进度条：只在文章页显示，滚动时按正文进度填充
+---
+
+<div id="reading-progress" aria-hidden="true">
+    <div class="reading-progress-bar"></div>
+</div>
+
+<style is:global>
+    #reading-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        z-index: 100;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    #reading-progress.is-active {
+        opacity: 1;
+    }
+    #reading-progress .reading-progress-bar {
+        height: 100%;
+        width: 0;
+        border-radius: 0 999px 999px 0;
+        background: linear-gradient(
+            90deg,
+            var(--primary),
+            oklch(0.72 0.14 var(--hue))
+        );
+        transition: width 0.08s linear;
+    }
+</style>
+
+<script>
+    function updateReadingProgress() {
+        const bar = document.querySelector(
+            "#reading-progress .reading-progress-bar",
+        ) as HTMLElement | null;
+        const wrap = document.getElementById("reading-progress");
+        if (!bar || !wrap) return;
+
+        // 只有文章页才有正文，其它页面直接藏起来
+        const article = document.querySelector(".markdown-content");
+        if (!article) {
+            wrap.classList.remove("is-active");
+            return;
+        }
+
+        const start = article.getBoundingClientRect().top + window.scrollY;
+        const total = article.scrollHeight - window.innerHeight * 0.6;
+        const passed = window.scrollY - start + window.innerHeight * 0.3;
+        const percent = total > 0 ? Math.min(Math.max(passed / total, 0), 1) : 0;
+
+        wrap.classList.add("is-active");
+        bar.style.width = `${(percent * 100).toFixed(2)}%`;
+    }
+
+    window.addEventListener("scroll", updateReadingProgress, { passive: true });
+    window.addEventListener("resize", updateReadingProgress);
+    document.addEventListener("astro:page-load", updateReadingProgress);
+    window.addEventListener("load", updateReadingProgress);
+
+    const swupHooks = (window as unknown as { swup?: { hooks?: { on: (n: string, f: () => void) => void } } }).swup;
+    if (swupHooks?.hooks) {
+        swupHooks.hooks.on("content:replace", () => setTimeout(updateReadingProgress, 60));
+        swupHooks.hooks.on("page:view", () => setTimeout(updateReadingProgress, 200));
+    }
+    setTimeout(updateReadingProgress, 300);
+</script>
