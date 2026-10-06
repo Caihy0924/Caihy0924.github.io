@@ -33,6 +33,9 @@ const socials = showSocial ? profileConfig.links : [];
                 </div>
             )}
         </div>
+        <div class="banner-hero-scroll" aria-hidden="true">
+            <Icon name="material-symbols:keyboard-double-arrow-down-rounded" />
+        </div>
     </div>
 )}
 
@@ -122,16 +125,16 @@ const socials = showSocial ? profileConfig.links : [];
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.7rem;
-        max-width: 48rem;
+        gap: 1rem;
+        max-width: 52rem;
     }
 
     .banner-hero-title {
         margin: 0;
-        font-size: clamp(1.9rem, 4.6vw, 3.75rem);
-        font-weight: 700;
-        line-height: 1.15;
-        letter-spacing: 0.02em;
+        font-size: clamp(2.2rem, 5.4vw, 4.5rem);
+        font-weight: 800;
+        line-height: 1.12;
+        letter-spacing: 0.01em;
         color: #fff;
         text-shadow: 0 2px 24px rgba(0, 0, 0, 0.75), 0 1px 4px rgba(0, 0, 0, 0.6);
     }
@@ -139,8 +142,8 @@ const socials = showSocial ? profileConfig.links : [];
     .banner-hero-sub {
         margin: 0;
         min-height: 1.6em;
-        font-size: clamp(0.85rem, 1.5vw, 1.1rem);
-        color: rgba(255, 255, 255, 0.86);
+        font-size: clamp(0.9rem, 1.7vw, 1.25rem);
+        color: rgba(255, 255, 255, 0.9);
         text-shadow: 0 1px 12px rgba(0, 0, 0, 0.85);
     }
 
@@ -163,27 +166,45 @@ const socials = showSocial ? profileConfig.links : [];
     }
 
     .banner-hero-btn {
-        width: 2.6rem;
-        height: 2.6rem;
+        width: 2.9rem;
+        height: 2.9rem;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 9999px;
-        font-size: 1.35rem;
-        color: rgba(255, 255, 255, 0.9);
-        background: rgba(255, 255, 255, 0.12);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        backdrop-filter: blur(6px);
-        transition: background 0.2s ease, transform 0.2s ease;
+        font-size: 1.45rem;
+        color: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        backdrop-filter: blur(10px);
+        transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
     }
 
     .banner-hero-btn:hover {
-        background: rgba(255, 255, 255, 0.22);
-        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.26);
+        border-color: rgba(255, 255, 255, 0.45);
+        transform: translateY(-2px);
+    }
+
+    /* 首屏底部那个「往下滑」的小提示 */
+    .banner-hero-scroll {
+        position: absolute;
+        left: 50%;
+        bottom: 4.5rem;
+        transform: translateX(-50%);
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 2rem;
+        animation: bannerHeroFloat 2.2s ease-in-out infinite;
+    }
+
+    @keyframes bannerHeroFloat {
+        0%, 100% { transform: translate(-50%, 0); opacity: 0.55; }
+        50% { transform: translate(-50%, 6px); opacity: 0.95; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .banner-hero-cursor {
+        .banner-hero-cursor,
+        .banner-hero-scroll {
             animation: none;
         }
     }
