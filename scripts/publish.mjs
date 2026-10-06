@@ -11,18 +11,17 @@ function git(args, options = {}) {
 	return execFileSync("git", args, { encoding: "utf8", ...options });
 }
 
-const status = git(["status", "--porcelain"]).trim();
-if (!status) {
+// 直接问 git 要文件名单，不要去解析状态行的格式（空格数量不固定，容易切错）
+const tracked = git(["diff", "--name-only", "HEAD"]);
+const untracked = git(["ls-files", "--others", "--exclude-standard"]);
+const changed = [...tracked.split("\n"), ...untracked.split("\n")]
+	.map((line) => line.trim())
+	.filter(Boolean);
+
+if (changed.length === 0) {
 	console.log("没有改动，不用提交。");
 	process.exit(0);
 }
-
-const changed = status
-	.split("\n")
-	// 状态行是「两个状态字符 + 若干空格 + 路径」，用正则吃掉前面那截更稳
-	.map((line) => line.replace(/^.{2}\s+/, "").trim().replace(/^"|"$/g, ""))
-	.map((line) => (line.includes(" -> ") ? line.split(" -> ").pop() : line))
-	.filter(Boolean);
 
 // 提交信息：优先用最近改动的那篇文章的标题，否则用改动最多的目录
 const post = changed.find(
