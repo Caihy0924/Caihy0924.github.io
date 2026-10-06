@@ -2,7 +2,7 @@
 title: "Atcoder abc415 A-E"
 published: 2025-08-20
 description: ""
-image: ""
+image: "/covers/Atcoder-abc415-A-E.jpg"
 tags: ["题目"]
 category: "题解"
 draft: false

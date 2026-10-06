@@ -2,7 +2,7 @@
 title: "SP703 SERVICE - Mobile Service"
 published: 2026-06-27
 description: ""
-image: ""
+image: "/covers/SP703-SERVICE---Mobile-Service.jpg"
 tags: ["题目"]
 category: "题解"
 draft: false

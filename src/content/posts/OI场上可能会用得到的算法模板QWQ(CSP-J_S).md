@@ -2,7 +2,7 @@
 title: "OI场上可能会用得到的算法模板QWQ(CSP-J_S)"
 published: 2026-10-05
 description: ""
-image: ""
+image: "/covers/OI场上可能会用得到的算法模板QWQ-CSP-J_S-.jpg"
 tags: ["题目", "算法"]
 category: "模板"
 draft: true

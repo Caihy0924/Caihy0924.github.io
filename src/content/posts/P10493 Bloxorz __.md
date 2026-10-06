@@ -2,7 +2,7 @@
 title: "P10493 Bloxorz ||"
 published: 2025-12-04
 description: ""
-image: ""
+image: "/covers/P10493-Bloxorz-__.jpg"
 tags: ["题目"]
 category: "题解"
 draft: false

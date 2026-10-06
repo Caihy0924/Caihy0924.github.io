@@ -2,7 +2,7 @@
 title: "CF Round1034 A-E"
 published: 2025-07-15
 description: ""
-image: ""
+image: "/covers/CF-Round1034-A-E.jpg"
 tags: ["题目"]
 category: "题解"
 draft: false

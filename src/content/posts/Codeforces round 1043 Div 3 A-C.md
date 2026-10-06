@@ -2,7 +2,7 @@
 title: "Codeforces round 1043 Div 3 A-C"
 published: 2025-08-26
 description: ""
-image: ""
+image: "/covers/Codeforces-round-1043-Div-3-A-C.jpg"
 tags: ["题目"]
 category: "题解"
 draft: false

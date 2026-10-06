@@ -2,7 +2,7 @@
 title: 换了个新家
 published: 2026-10-05
 description: "博客从 Hugo 搬到了 Astro + Fuwari，顺便把写文章的格式记一遍。"
-image: ""
+image: "/covers/hello-world.jpg"
 tags: ["算法"]
 category: "随笔"
 draft: false

@@ -16,7 +16,8 @@ const showToc = siteConfig.toc.enable && headings.length > 0;
 ---
 
 <div id="right-sidebar" class:list={[className, "w-full"]}>
-    <div class="flex flex-col w-full gap-4">
+    <!-- sticky：往下滚的时候这一栏跟着走；高度超过屏幕时它自己内部滚动，不会顶到看不见的地方 -->
+    <div class="flex flex-col w-full gap-4 sticky top-4 max-h-[calc(100vh_-_2rem)] overflow-y-auto overflow-x-hidden hide-scrollbar">
         <!-- 注意：Swup 的容器之一就是 #toc，这个 div 必须每页都存在 -->
         <div id="toc">
             {showToc && (

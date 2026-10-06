@@ -2,7 +2,7 @@
 title: "P10500 Rainbow 的信号"
 published: 2026-09-08
 description: ""
-image: ""
+image: "/covers/P10500-Rainbow-的信号.jpg"
 tags: ["题目"]
 category: "题解"
 draft: false

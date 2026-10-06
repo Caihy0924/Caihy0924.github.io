@@ -2,7 +2,7 @@
 title: "ABC413 A-E"
 published: 2025-07-09
 description: ""
-image: ""
+image: "/covers/ABC413-A-E.jpg"
 tags: ["题目"]
 category: "题解"
 draft: false

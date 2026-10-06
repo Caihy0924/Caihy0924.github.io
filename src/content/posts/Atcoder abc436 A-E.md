@@ -2,7 +2,7 @@
 title: "Atcoder abc436 A-E"
 published: 2025-12-20
 description: ""
-image: ""
+image: "/covers/Atcoder-abc436-A-E.jpg"
 tags: ["题目"]
 category: "题解"
 draft: false

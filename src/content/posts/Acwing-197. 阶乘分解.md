@@ -2,7 +2,7 @@
 title: "Acwing-197. 阶乘分解"
 published: 2024-09-28
 description: ""
-image: ""
+image: "/covers/Acwing-197--阶乘分解.jpg"
 tags: ["题目", "数论"]
 category: "题解"
 draft: false

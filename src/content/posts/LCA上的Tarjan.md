@@ -2,7 +2,7 @@
 title: "LCA上的Tarjan"
 published: 2026-08-23
 description: ""
-image: ""
+image: "/covers/LCA上的Tarjan.jpg"
 tags: ["算法"]
 category: "算法笔记"
 draft: false

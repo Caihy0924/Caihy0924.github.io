@@ -2,7 +2,7 @@
 title: "信奥新手-DFS_BFS"
 published: 2026-10-05
 description: ""
-image: ""
+image: "/covers/信奥新手-DFS_BFS.jpg"
 tags: ["算法"]
 category: "算法笔记"
 draft: true

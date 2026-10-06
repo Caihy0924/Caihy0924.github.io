@@ -2,7 +2,7 @@
 title: "jr的数学の的奇妙冒险-1"
 published: 2024-10-21
 description: ""
-image: ""
+image: "/covers/jr的数学の的奇妙冒险-1.jpg"
 tags: ["数论"]
 category: "数学"
 draft: false

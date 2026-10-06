@@ -2,7 +2,7 @@
 title: "jr的数学の的奇妙冒险-3&容斥原理"
 published: 2024-11-02
 description: ""
-image: ""
+image: "/covers/jr的数学の的奇妙冒险-3-容斥原理.jpg"
 tags: ["数论"]
 category: "数学"
 draft: false

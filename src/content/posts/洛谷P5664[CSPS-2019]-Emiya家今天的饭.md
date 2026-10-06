@@ -2,7 +2,7 @@
 title: "洛谷P5664[CSPS-2019]-Emiya家今天的饭"
 published: 2025-07-22
 description: ""
-image: ""
+image: "/covers/洛谷P5664-CSPS-2019--Emiya家今天的饭.jpg"
 tags: ["题目"]
 category: "题解"
 draft: false

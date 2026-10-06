@@ -2,7 +2,7 @@
 title: "jr数学的退休生活-2"
 published: 2025-08-15
 description: ""
-image: ""
+image: "/covers/jr数学的退休生活-2.jpg"
 tags: ["数论"]
 category: "数学"
 draft: false

@@ -2,7 +2,7 @@
 title: "洛谷[LGR-231-Div.3]A-D"
 published: 2026-10-05
 description: ""
-image: ""
+image: "/covers/洛谷-LGR-231-Div-3-A-D.jpg"
 tags: ["题目"]
 category: "题解"
 draft: true

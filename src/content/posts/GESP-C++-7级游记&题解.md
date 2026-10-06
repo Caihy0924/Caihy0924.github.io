@@ -2,7 +2,7 @@
 title: "GESP-C++-7级游记&题解"
 published: 2025-06-28
 description: ""
-image: ""
+image: "/covers/GESP-C++-7级游记-题解.jpg"
 tags: ["题目"]
 category: "游记"
 draft: false

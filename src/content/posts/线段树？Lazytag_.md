@@ -2,7 +2,7 @@
 title: "线段树？Lazytag?"
 published: 2024-10-23
 description: ""
-image: ""
+image: "/covers/线段树-Lazytag_.jpg"
 tags: ["算法"]
 category: "算法笔记"
 draft: false

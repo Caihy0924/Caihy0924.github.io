@@ -2,7 +2,7 @@
 title: "Acwing-246. 区间最大公约数"
 published: 2024-10-01
 description: ""
-image: ""
+image: "/covers/Acwing-246--区间最大公约数.jpg"
 tags: ["题目", "数论"]
 category: "题解"
 draft: false

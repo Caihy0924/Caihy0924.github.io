@@ -2,7 +2,7 @@
 title: "乘法逆元讲解(p为质数）"
 published: 2026-10-05
 description: ""
-image: ""
+image: "/covers/乘法逆元讲解-p为质数-.jpg"
 tags: ["数论"]
 category: "数学"
 draft: true
