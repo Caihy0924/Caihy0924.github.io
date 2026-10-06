@@ -1,4 +1,5 @@
 ---
+import { analyticsConfig } from "../../config";
 import { getSiteStats } from "../../utils/content-utils";
 import WidgetLayout from "./WidgetLayout.astro";
 
@@ -37,5 +38,18 @@ const rows = [
                 <span class="font-bold tabular-nums">{r.value}</span>
             </div>
         ))}
+        {analyticsConfig.visitorBadge.enable && (
+            <div class="flex items-center justify-between text-sm">
+                <span class="text-black/50 dark:text-white/50">总访问</span>
+                <img
+                    src={`https://visitor-badge.laobi.icu/badge?page_id=${encodeURIComponent(analyticsConfig.visitorBadge.pageId)}&left_text=${encodeURIComponent(analyticsConfig.visitorBadge.label)}`}
+                    alt="访问量"
+                    class="h-5"
+                    loading="lazy"
+                    referrerpolicy="no-referrer"
+                    onerror="this.closest('div').style.display='none'"
+                />
+            </div>
+        )}
     </div>
 </WidgetLayout>

@@ -5,7 +5,7 @@ import "@fontsource/roboto/700.css";
 
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import VoidParticles from "@components/VoidParticles.astro";
-import { profileConfig, siteConfig } from "@/config";
+import { analyticsConfig, profileConfig, siteConfig } from "@/config";
 import {
 	AUTO_MODE,
 	BANNER_HEIGHT,
@@ -147,6 +147,22 @@ const bannerOffset =
 		<slot name="head"></slot>
 
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
+
+		<!-- 访问统计：默认两个都关着，填了 ID 再打开 -->
+		{analyticsConfig.umami.enable && analyticsConfig.umami.websiteId && (
+			<script is:inline defer src={analyticsConfig.umami.src} data-website-id={analyticsConfig.umami.websiteId}></script>
+		)}
+		{analyticsConfig.google.enable && analyticsConfig.google.measurementId && (
+			<>
+				<script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${analyticsConfig.google.measurementId}`}></script>
+				<script is:inline define:vars={{ measurementId: analyticsConfig.google.measurementId }}>
+					window.dataLayer = window.dataLayer || [];
+					function gtag() { dataLayer.push(arguments); }
+					gtag('js', new Date());
+					gtag('config', measurementId);
+				</script>
+			</>
+		)}
 
 	</head>
 	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}

@@ -139,3 +139,24 @@ export const bannerTextConfig = {
 	typewriter: true, // 打字机效果；关掉就静态显示
 	showSocial: true, // 标题下面那排圆形图标（取个人资料里的链接 + RSS）
 };
+
+// ───────── 访问统计 ─────────
+export const analyticsConfig = {
+	// 免注册的访问计数：第三方免费图床服务，读不到时这一行会自动隐藏
+	visitorBadge: {
+		enable: true,
+		pageId: "caihy0924.github.io",
+		label: "views",
+	},
+	// Umami（推荐，有免费额度、不收集隐私）：去 https://umami.is 注册建站后填这两项
+	umami: {
+		enable: false,
+		src: "", // 例如 https://cloud.umami.is/script.js
+		websiteId: "", // 形如 8f3b0a1c-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+	},
+	// Google Analytics：填 G-XXXXXXXXXX（国内访问者可能加载不了）
+	google: {
+		enable: false,
+		measurementId: "",
+	},
+};
