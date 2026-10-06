@@ -230,10 +230,10 @@ body {
 }
 
 :root:root {
-	--primary: oklch(0.55 0.115 var(--hue));
+	--primary: oklch(0.52 0.115 var(--hue));
 	--page-bg: oklch(0.93 0.006 var(--hue));
-	--card-bg: oklch(0.985 0.004 var(--hue) / 0.94);
-	--card-border: rgba(255, 255, 255, 0.55);
+	--card-bg: oklch(0.985 0.004 var(--hue)); /* 实底：不管背后是什么，卡片就是同一块白 */
+	--card-border: rgba(0, 0, 0, 0.06);
 	--tag-fg: oklch(0.5 0.09 var(--hue));
 	--tag-bg: oklch(0.935 0.028 var(--hue) / 0.85);
 	--btn-content: oklch(0.46 0.04 var(--hue));
@@ -245,7 +245,7 @@ body {
 	--btn-card-bg-hover: oklch(0.96 0.006 var(--hue));
 	--btn-card-bg-active: oklch(0.9 0.012 var(--hue));
 	--deep-text: oklch(0.3 0.012 var(--hue));
-	--title-active: oklch(0.55 0.115 var(--hue));
+	--title-active: oklch(0.52 0.115 var(--hue));
 	--codeblock-bg: oklch(0.21 0.012 var(--hue));
 	--codeblock-topbar-bg: oklch(0.29 0.014 var(--hue));
 	--float-panel-bg: oklch(0.985 0.004 var(--hue) / 0.95);
@@ -261,10 +261,10 @@ body {
 }
 
 :root:root.dark {
-	--primary: oklch(0.78 0.10 var(--hue));      /* 更亮更饱和，页面有个记忆点 */
+	--primary: oklch(0.80 0.10 var(--hue));      /* 更亮更饱和，页面有个记忆点 */
 	--page-bg: oklch(0.145 0.009 var(--hue));    /* 近黑的蓝灰，虚空底色 */
-	--card-bg: oklch(0.25 0.013 var(--hue) / 0.9); /* 半透明卡片，壁纸透出来 */
-	--card-border: rgba(255, 255, 255, 0.07);
+	--card-bg: oklch(0.235 0.013 var(--hue)); /* 实底：暗色下也不会和背景糊在一起 */
+	--card-border: rgba(255, 255, 255, 0.09);
 	--tag-fg: oklch(0.84 0.07 var(--hue));
 	--tag-bg: oklch(0.3 0.045 var(--hue) / 0.55);
 	--btn-content: oklch(0.82 0.04 var(--hue));

@@ -2,8 +2,9 @@
 
 @layer components {
     .card-base {
-        /* 磨砂玻璃卡片：半透明底 + 模糊 + 一圈极淡的描边，壁纸从下面透出来 */
-        @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--card-bg)] backdrop-blur-md
+        /* 卡片：实底 + 一圈极淡描边。壁纸只在卡片之间的缝里透出来，
+           免得出现「压在深色横幅上就显得很透」的情况 */
+        @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--card-bg)]
         border border-[var(--card-border)] transition;
     }
     h1, h2, h3, h4, h5, h6, p, a, span, li, ul, ol, blockquote, code, pre, table, th, td, strong {
