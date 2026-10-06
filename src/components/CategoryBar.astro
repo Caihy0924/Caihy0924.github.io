@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import { getCategoryDotStyle } from "../constants/category-color";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { getCategoryList, getSortedPostsList } from "../utils/content-utils";
@@ -24,6 +25,7 @@ const total = (await getSortedPostsList()).length;
     </a>
     {categories.map((c) => (
         <a href={c.url} class="btn-regular rounded-full h-8 px-3 flex items-center gap-1.5 text-sm shrink-0">
+            <span class="w-1.5 h-1.5 rounded-full shrink-0" style={getCategoryDotStyle(c.name)}></span>
             {c.name.trim()}<span class="text-xs opacity-50 tabular-nums">{c.count}</span>
         </a>
     ))}

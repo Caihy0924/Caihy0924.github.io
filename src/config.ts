@@ -12,12 +12,13 @@ export const siteConfig: SiteConfig = {
 	subtitle: "臭打 OI 的中学生，写些博客",
 	lang: "zh_CN", // 界面语言，中文用 zh_CN
 	themeColor: {
-		hue: 250, // Default hue for the theme color, from 0 to 360. e.g. red: 0, teal: 200, cyan: 250, pink: 345
+		hue: 285, // Default hue for the theme color, from 0 to 360. e.g. red: 0, teal: 200, cyan: 250, pink: 345
 		fixed: false, // Hide the theme color picker for visitors
 	},
 	banner: {
 		enable: true, // 顶部壁纸横幅
 		src: "assets/images/void-banner.png", // 小骑士那张；想换图就改这里，或者把文件替换掉
+		backdrop: "assets/images/void-wallpaper.jpg", // 整屏背景壁纸（模糊后垫在卡片下面）
 		position: "center", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
 		credit: {
 			enable: false, // Display the credit text of the banner image

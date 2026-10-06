@@ -23,6 +23,8 @@ export type SiteConfig = {
 	banner: {
 		enable: boolean;
 		src: string;
+		/** 整屏背景壁纸（不填就用 src 那张） */
+		backdrop?: string;
 		position?: "top" | "center" | "bottom";
 		credit: {
 			enable: boolean;

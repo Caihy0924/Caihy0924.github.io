@@ -1,5 +1,6 @@
 ---
 import I18nKey from "../../i18n/i18nKey";
+import { getCategoryColor } from "../../constants/category-color";
 import { i18n } from "../../i18n/translation";
 import { getCategoryList } from "../../utils/content-utils";
 import ButtonLink from "../control/ButtonLink.astro";
@@ -27,6 +28,7 @@ const style = Astro.props.style;
         <ButtonLink
             url={c.url}
             badge={String(c.count)}
+            color={getCategoryColor(c.name)}
             label={`View all posts in the ${c.name.trim()} category`}
         >
             {c.name.trim()}
