@@ -18,6 +18,9 @@ const srcDir = path.resolve(root, "..", "cover-sources");
 
 const SOURCES = ["night.jpg", "minimal.jpg", "crystal.png"];
 
+// 同一张素材会被十几篇文章用到，换个裁切位置，重复感会淡很多
+const POSITIONS = ["attention", "center", "left", "right", "top", "bottom"];
+
 // 分类 → 叠色：保持暗调，只做轻微区分
 const TINTS = {
 	题解: "#3f8fc7",
@@ -47,10 +50,42 @@ for (const s of SOURCES) {
 
 fs.mkdirSync(outDir, { recursive: true });
 
-const files = fs
+// 排序必须跟线上首页完全一致：草稿不发布，置顶优先，其次发布日期从新到旧。
+// 这样素材轮换下来，列表里相邻的两张卡片一定不是同一张图。
+const entries = fs
 	.readdirSync(postsDir)
 	.filter((f) => f.endsWith(".md") && !f.startsWith("_"))
-	.sort();
+	.map((file) => {
+		const text = fs.readFileSync(path.join(postsDir, file), "utf8");
+		const dateMatch = text.match(/^published:\s*"?(.*?)"?\s*$/m);
+		const pinMatch = text.match(/^pinned:\s*(true|false)/m);
+		const draftMatch = text.match(/^draft:\s*(true|false)/m);
+		return {
+			file,
+			date: dateMatch ? Date.parse(dateMatch[1].trim()) || 0 : 0,
+			pinned: pinMatch ? pinMatch[1] === "true" : false,
+			draft: draftMatch ? draftMatch[1] === "true" : false,
+		};
+	})
+	.sort(
+		(a, b) =>
+			Number(b.pinned) - Number(a.pinned) ||
+			b.date - a.date ||
+			a.file.localeCompare(b.file),
+	);
+
+// 种子的下标只按“线上会显示的文章”数，草稿占位但不参与轮换
+const seedIndex = new Map();
+let seed = 0;
+for (const entry of entries) {
+	if (!entry.draft) seedIndex.set(entry.file, seed++);
+}
+let fallbackSeed = seed;
+for (const entry of entries) {
+	if (entry.draft) seedIndex.set(entry.file, fallbackSeed++);
+}
+
+const files = entries.map((entry) => entry.file);
 
 const report = [];
 let index = 0;
@@ -67,7 +102,10 @@ for (const file of files) {
 
 	const outName = `${safeName(file.replace(/\.md$/, ""))}.jpg`;
 	const outPath = path.join(outDir, outName);
-	const source = path.join(srcDir, SOURCES[index % SOURCES.length]);
+	const i = seedIndex.get(file) ?? index;
+	const source = path.join(srcDir, SOURCES[i % SOURCES.length]);
+	const position =
+		POSITIONS[Math.floor(i / SOURCES.length) % POSITIONS.length];
 	const tint = TINTS[category] ?? TINTS.随笔;
 
 	const overlay = Buffer.from(
@@ -84,7 +122,7 @@ for (const file of files) {
 	);
 
 	await sharp(source)
-		.resize(W, H, { fit: "cover", position: "attention" })
+		.resize(W, H, { fit: "cover", position })
 		.composite([{ input: overlay }])
 		.jpeg({ quality: 80, mozjpeg: true })
 		.toFile(outPath);
@@ -93,10 +131,12 @@ for (const file of files) {
 	if (next !== text) fs.writeFileSync(full, next, "utf8");
 
 	report.push({
+		i,
 		kb: Math.round(fs.statSync(outPath).size / 1024),
 		category,
 		title,
-		素材: SOURCES[index % SOURCES.length],
+		素材: SOURCES[i % SOURCES.length],
+		裁切: position,
 	});
 	index++;
 }
@@ -106,6 +146,12 @@ console.log(`生成 ${report.length} 张封面 → public/covers/`);
 console.log(
 	`总体积 ${(total / 1024).toFixed(1)} MB，平均 ${Math.round(total / report.length)} KB`,
 );
-report.slice(0, 6).forEach((r) => {
-	console.log(`  ${String(r.kb).padStart(3)}KB  [${r.category}] ${r.title}  ← ${r.素材}`);
+report
+	.filter((r) => r.i < seed)
+	.sort((a, b) => a.i - b.i)
+	.slice(0, 12)
+	.forEach((r) => {
+	console.log(
+		`  ${String(r.kb).padStart(3)}KB  [${r.category}] ${r.title}  ← ${r.素材} / ${r.裁切}`,
+	);
 });

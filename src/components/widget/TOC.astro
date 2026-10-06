@@ -71,6 +71,7 @@ class TableOfContents extends HTMLElement {
     tocEntries: HTMLAnchorElement[] = [];
     active: boolean[] = [];
     activeIndicator: HTMLElement | null = null;
+    initialized = false;
 
     constructor() {
         super();
@@ -200,15 +201,24 @@ class TableOfContents extends HTMLElement {
         return min < value && value < max;
     };
 
+    // 只初始化一次；动画没触发时靠下面的兜底定时器补上
+    runInit = () => {
+        if (this.initialized || !this.isConnected) return;
+        this.initialized = true;
+        this.init();
+    };
+
     connectedCallback() {
         // wait for the onload animation to finish, which makes the `getBoundingClientRect` return correct values
         const element = document.querySelector('.prose');
         if (element) {
-            element.addEventListener('animationend', () => {
-                this.init();
-            }, { once: true });
+            element.addEventListener('animationend', this.runInit, { once: true });
+            // 兜底：动画被跳过（隐藏的标签页、减少动效、动画早就播完）时也要初始化，
+            // 否则目录不会跟着滚动高亮。
+            window.setTimeout(this.runInit, 1000);
         } else {
             console.debug('Animation element not found');
+            this.runInit();
         }
     };
 
