@@ -19,7 +19,7 @@ const showToc = siteConfig.toc.enable && headings.length > 0;
     <!-- sticky：往下滚的时候这一栏跟着走；高度超过屏幕时它自己内部滚动，不会顶到看不见的地方 -->
     <div class="flex flex-col w-full gap-4 sticky top-4 max-h-[calc(100vh_-_2rem)] overflow-y-auto overflow-x-hidden hide-scrollbar">
         <!-- 注意：Swup 的容器之一就是 #toc，这个 div 必须每页都存在 -->
-        <div id="toc">
+        <div id="toc" class="shrink-0">
             {showToc && (
                 <WidgetLayout name="目录" id="toc-widget" class="onload-animation">
                     <div id="toc-inner-wrapper" class="pb-4 max-h-[50vh] overflow-y-auto overflow-x-hidden hide-scrollbar">
@@ -29,7 +29,25 @@ const showToc = siteConfig.toc.enable && headings.length > 0;
             )}
         </div>
 
-        <RecentDynamic class="onload-animation" style="animation-delay: 100ms"></RecentDynamic>
-        <Calendar class="onload-animation" style="animation-delay: 150ms"></Calendar>
+        <!-- shrink-0：不让 flex 把挂件压扁，内容被裁掉就找不回来了 -->
+        <RecentDynamic class="onload-animation shrink-0" style="animation-delay: 100ms"></RecentDynamic>
+        <Calendar class="onload-animation shrink-0" style="animation-delay: 150ms"></Calendar>
     </div>
 </div>
+
+<script>
+    // 鼠标停在目录上滚轮时，让页面跟着滚，而不是被目录自己的小滚动条吃掉。
+    // 目录会自己跟着高亮项滚，所以不需要手动滚它。
+    document.addEventListener(
+        "wheel",
+        (event) => {
+            const target = event.target as Element | null;
+            if (!target?.closest?.("#toc") || event.ctrlKey) return;
+
+            event.preventDefault();
+            const delta = event.deltaMode === 1 ? event.deltaY * 16 : event.deltaY;
+            window.scrollBy(0, delta);
+        },
+        { passive: false },
+    );
+</script>
