@@ -19,7 +19,9 @@ if (!status) {
 
 const changed = status
 	.split("\n")
-	.map((line) => line.slice(3).trim().replace(/^"|"$/g, ""))
+	// 状态行是「两个状态字符 + 若干空格 + 路径」，用正则吃掉前面那截更稳
+	.map((line) => line.replace(/^.{2}\s+/, "").trim().replace(/^"|"$/g, ""))
+	.map((line) => (line.includes(" -> ") ? line.split(" -> ").pop() : line))
 	.filter(Boolean);
 
 // 提交信息：优先用最近改动的那篇文章的标题，否则用改动最多的目录
