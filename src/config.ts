@@ -144,7 +144,7 @@ export const bannerTextConfig = {
 	hitokoto: {
 		enable: true,
 		// 分类，留空 = 全部分类。可填：a动画 b漫画 c游戏 d文学 e原创 f网络 g其他 h影视 i诗词 j网易云 k哲学
-		categories: [] as string[],
+		categories: ["i", "d"] as string[], // i = 诗词，d = 文学
 		// 是否在结尾加上出处，例如「—— 《银河系漫游指南》」
 		showFrom: true,
 		// 超时（毫秒），超时就用 subtitles
