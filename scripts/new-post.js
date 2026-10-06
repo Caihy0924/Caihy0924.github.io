@@ -42,14 +42,17 @@ if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true })
 }
 
+// 默认带上本站的标签/分类体系，省得每次手填
+// 标签只能是：题目 / 算法 / 数论
+// 分类只能是：题解 / 算法笔记 / 数学 / 游记 / 模板 / 随笔
 const content = `---
 title: ${args[0]}
 published: ${getDate()}
 description: ''
 image: ''
-tags: []
-category: ''
-draft: false 
+tags: ["题目"]
+category: "题解"
+draft: false
 lang: ''
 ---
 `

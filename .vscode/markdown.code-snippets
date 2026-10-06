@@ -1,0 +1,36 @@
+{
+  "博客文章开头": {
+    "prefix": "post",
+    "body": [
+      "---",
+      "title: ${1:标题}",
+      "published: ${2:${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}}",
+      "description: \"${3:一句话简介}\"",
+      "image: \"\"",
+      "tags: [\"${4|题目,算法,数论|}\"]",
+      "category: \"${5|题解,算法笔记,数学,游记,模板,随笔|}\"",
+      "draft: false",
+      "lang: \"\"",
+      "---",
+      "",
+      "## ${6:题目大意}",
+      "",
+      "$0"
+    ],
+    "description": "新建博客文章时插入 front matter（标签和分类可以直接选）"
+  },
+  "提示框": {
+    "prefix": "tip",
+    "body": [
+      "> [!${1|TIP,NOTE,WARNING,IMPORTANT,CAUTION|}]",
+      "> ${2:内容}",
+      "$0"
+    ],
+    "description": "插入 GitHub 风格的提示框"
+  },
+  "代码块": {
+    "prefix": "cppblock",
+    "body": ["```cpp", "${1}", "```", "$0"],
+    "description": "插入 C++ 代码块"
+  }
+}
