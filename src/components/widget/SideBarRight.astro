@@ -1,0 +1,34 @@
+---
+import type { MarkdownHeading } from "astro";
+import { siteConfig } from "../../config";
+import Calendar from "./Calendar.astro";
+import RecentDynamic from "./RecentDynamic.astro";
+import TOC from "./TOC.astro";
+import WidgetLayout from "./WidgetLayout.astro";
+
+interface Props {
+	class?: string;
+	headings?: MarkdownHeading[];
+}
+const className = Astro.props.class;
+const { headings = [] } = Astro.props;
+const showToc = siteConfig.toc.enable && headings.length > 0;
+---
+
+<div id="right-sidebar" class:list={[className, "w-full"]}>
+    <div class="flex flex-col w-full gap-4">
+        <!-- 注意：Swup 的容器之一就是 #toc，这个 div 必须每页都存在 -->
+        <div id="toc">
+            {showToc && (
+                <WidgetLayout name="目录" id="toc-widget" class="onload-animation">
+                    <div id="toc-inner-wrapper" class="pb-4 max-h-[50vh] overflow-y-auto overflow-x-hidden hide-scrollbar">
+                        <TOC headings={headings}></TOC>
+                    </div>
+                </WidgetLayout>
+            )}
+        </div>
+
+        <RecentDynamic class="onload-animation" style="animation-delay: 100ms"></RecentDynamic>
+        <Calendar class="onload-animation" style="animation-delay: 150ms"></Calendar>
+    </div>
+</div>
