@@ -13,10 +13,12 @@ interface Props {
 const className = Astro.props.class;
 ---
 <div id="sidebar" class:list={[className, "w-full"]}>
-    <div class="flex flex-col w-full gap-4">
+    <!-- 和右栏一样吸顶：往下滚的时候头像/分类这些跟着走，
+         高度超过屏幕时它自己内部滚动，免得下半截永远看不到 -->
+    <div id="sidebar-sticky" class="flex flex-col w-full gap-4 sticky top-4 max-h-[calc(100vh_-_2rem)] overflow-y-auto overflow-x-hidden hide-scrollbar">
         <Profile></Profile>
-        <Categories class="onload-animation" style="animation-delay: 100ms"></Categories>
-        <Tag class="onload-animation" style="animation-delay: 150ms"></Tag>
-        <SiteStats class="onload-animation" style="animation-delay: 200ms"></SiteStats>
+        <Categories class="onload-animation shrink-0" style="animation-delay: 100ms"></Categories>
+        <Tag class="onload-animation shrink-0" style="animation-delay: 150ms"></Tag>
+        <SiteStats class="onload-animation shrink-0" style="animation-delay: 200ms"></SiteStats>
     </div>
 </div>

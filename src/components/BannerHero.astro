@@ -5,7 +5,7 @@ import { Icon } from "astro-icon/components";
 import { bannerTextConfig, profileConfig } from "../config";
 import { url } from "../utils/url-utils";
 
-const { enable, title, subtitles, typewriter, showSocial } = bannerTextConfig;
+const { enable, title, subtitles, typewriter, showSocial, hitokoto } = bannerTextConfig;
 const lines = (subtitles ?? []).filter((s) => s && s.trim() !== "");
 const socials = showSocial ? profileConfig.links : [];
 ---
@@ -39,17 +39,46 @@ const socials = showSocial ? profileConfig.links : [];
     </div>
 )}
 
-<script define:vars={{ lines, typewriter }}>
-	(function () {
+<script define:vars={{ lines, typewriter, hitokoto }}>
+	(async function () {
 		const typedEl = document.getElementById("banner-hero-typed");
-		if (!typedEl || !lines || lines.length === 0) return;
+		if (!typedEl) return;
+
+		const fallbackLines = lines && lines.length > 0 ? lines : [];
+		let quoteLines = fallbackLines;
+
+		// 先用备用副标题顶上，免得等接口的时候那一行是空的
+		if (fallbackLines[0]) typedEl.textContent = fallbackLines[0];
+
+		// 一言：取到了就用它当副标题
+		if (hitokoto?.enable) {
+			try {
+				const params = new URLSearchParams({ encode: "json" });
+				for (const c of hitokoto.categories || []) params.append("c", c);
+				const res = await fetch(`https://v1.hitokoto.cn/?${params.toString()}`, {
+					signal: AbortSignal.timeout(hitokoto.timeout || 4000),
+				});
+				const data = await res.json();
+				if (data?.hitokoto) {
+					quoteLines =
+						hitokoto.showFrom && data.from
+							? [`${data.hitokoto} ——《${data.from}》`]
+							: [data.hitokoto];
+				}
+			} catch (error) {
+				console.debug("一言没取到，用备用副标题", error);
+			}
+		}
+
+		if (quoteLines.length === 0) return;
 
 		const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 		if (!typewriter || reduceMotion) {
-			typedEl.textContent = lines[0];
+			typedEl.textContent = quoteLines[0];
 			return;
 		}
 
+		typedEl.textContent = "";
 		let lineIndex = 0;
 		let charIndex = 0;
 		let deleting = false;
@@ -58,14 +87,14 @@ const socials = showSocial ? profileConfig.links : [];
 		const DELETE_SPEED = 38;
 
 		function tick() {
-			const full = lines[lineIndex] || "";
+			const full = quoteLines[lineIndex] || "";
 
 			if (!deleting) {
 				charIndex++;
 				typedEl.textContent = full.slice(0, charIndex);
 				if (charIndex >= full.length) {
 					// 只有一句就停在这，多句才继续轮播
-					if (lines.length === 1) return;
+					if (quoteLines.length === 1) return;
 					deleting = true;
 					window.setTimeout(tick, 2400);
 					return;
@@ -78,7 +107,7 @@ const socials = showSocial ? profileConfig.links : [];
 			typedEl.textContent = full.slice(0, charIndex);
 			if (charIndex <= 0) {
 				deleting = false;
-				lineIndex = (lineIndex + 1) % lines.length;
+				lineIndex = (lineIndex + 1) % quoteLines.length;
 				window.setTimeout(tick, 420);
 				return;
 			}

@@ -139,6 +139,17 @@ export const bannerTextConfig = {
 	subtitles: ["臭打 OI 的中学生，写些博客"],
 	typewriter: true, // 打字机效果；关掉就静态显示
 	showSocial: true, // 标题下面那排圆形图标（取个人资料里的链接 + RSS）
+	// ───────── 副标题改用「一言」─────────
+	// 打开后副标题从 hitokoto 接口随机取一句，取不到就退回上面的 subtitles
+	hitokoto: {
+		enable: true,
+		// 分类，留空 = 全部分类。可填：a动画 b漫画 c游戏 d文学 e原创 f网络 g其他 h影视 i诗词 j网易云 k哲学
+		categories: [] as string[],
+		// 是否在结尾加上出处，例如「—— 《银河系漫游指南》」
+		showFrom: true,
+		// 超时（毫秒），超时就用 subtitles
+		timeout: 4000,
+	},
 };
 
 // ───────── 访问统计 ─────────

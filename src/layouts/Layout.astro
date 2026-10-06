@@ -215,13 +215,12 @@ const bannerOffset =
 		@apply h-[var(--banner-height-home)] translate-y-[var(--bannerOffset)]
 	}
 	.enable-banner.is-home #main-grid {
-		@apply translate-y-[var(--banner-height-extend)];
+		/* 这里不能用 translate-y：transform 会让子元素的 position:sticky 失效，
+		   表现就是主页滚动时左右两栏不吸顶、边上空出大片。用 margin 达到同样效果。 */
+		@apply mt-[var(--banner-height-extend)];
 	}
 	.enable-banner #top-row {
 		@apply h-[calc(var(--banner-height-home)_-_4.5rem)] transition-all duration-300
-	}
-	.enable-banner.is-home #sidebar-sticky {
-		@apply top-[calc(1rem_-_var(--banner-height-extend))]
 	}
 	.navbar-hidden {
 		@apply opacity-0 -translate-y-16
