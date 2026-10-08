@@ -18,6 +18,8 @@ import {
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import config from "./astro-paper.config";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 
 export default defineConfig({
   site: config.site.url,
@@ -29,8 +31,8 @@ export default defineConfig({
     }),
   ],
   i18n: {
-    locales: ["en"],
-    defaultLocale: "en",
+    locales: ["zh-CN"],
+    defaultLocale: "zh-CN",
     routing: {
       prefixDefaultLocale: false,
     },
@@ -39,9 +41,10 @@ export default defineConfig({
     processor: unified({
       remarkPlugins: [
         remarkToc,
+        remarkMath,
         [remarkCollapse, { test: "Table of contents" }],
       ],
-      rehypePlugins: [rehypeCallouts],
+      rehypePlugins: [rehypeCallouts, rehypeKatex],
     }),
     shikiConfig: {
       themes: { light: "min-light", dark: "night-owl" },
@@ -62,7 +65,7 @@ export default defineConfig({
     {
       name: "Google Sans Code",
       cssVariable: "--font-google-sans-code",
-      provider: fontProviders.google(),
+      provider: fontProviders.bunny(),
       fallbacks: ["monospace"],
       weights: [300, 400, 500, 600, 700],
       styles: ["normal", "italic"],
